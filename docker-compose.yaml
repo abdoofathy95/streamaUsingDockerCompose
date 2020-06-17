@@ -4,6 +4,7 @@ services:
   mysql:
     restart: unless-stopped
     image: mysql:5.7
+    container_name: streama_mysql
     volumes:
       - ./data:/var/lib/mysql 
     networks:
@@ -19,6 +20,7 @@ services:
   streama:
     restart: unless-stopped
     image: gkiko/streama:latest
+    container_name: streama_mysql
     ports:
       - 8080:8080
     networks:
