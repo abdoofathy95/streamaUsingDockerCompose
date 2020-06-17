@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  mysql:
+    restart: unless-stopped
+    image: mysql:5.7
+    volumes:
+      - ./data:/var/lib/mysql 
+    networks:
+      - nginx-proxy
+    expose:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: streama_root_password
+      MYSQL_USER: streama
+      MYSQL_DATABASE: streama
+      MYSQL_PASSWORD: streama_password
+
+  streama:
+    restart: unless-stopped
+    image: gkiko/streama:latest
+    ports:
+      - 8080:8080
+    networks:
+      - nginx-proxy
+    volumes:
+      - ./data/videos:/data 
+    depends_on:
+      - mysql
+    environment:
+      ACTIVE_PROFILE: mysql
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DB: streama
+      MYSQL_USER: streama
+      MYSQL_PASSWORD: streama_password
+      VIRTUAL_HOST: # ADJUST THIS HOST
+      VIRTUAL_PORT: 8080
+      LETSENCRYPT_HOST: # ADJUST THIS HOST
+      LETSENCRYPT_EMAIL: # ADJUST EMAIL
+networks:
+  nginx-proxy:
+    external: true
+  back:
+    driver: bridge
